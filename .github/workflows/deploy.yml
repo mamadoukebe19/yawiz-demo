@@ -10,16 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️ Checkout repository
+    # 1️⃣ Checkout repository
     - uses: actions/checkout@v4
 
-    # 2️ Install Ansible
+    # 2️⃣ Install Ansible
     - name: Install Ansible
       run: |
         sudo apt update
         sudo apt install -y ansible
 
-    # 3️ Setup SSH
+    # 3️⃣ Setup SSH
     - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
@@ -27,22 +27,22 @@ jobs:
         chmod 600 ~/.ssh/serverweb.pem
         echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
-    # 4️ Debug secret (optional)
+    # 4️⃣ Debug secret (optional)
     - name: Debug SERVER_1_IP
       run: |
         echo "SERVER_1_IP length: ${#SERVER_1_IP}"
       env:
         SERVER_1_IP: ${{ secrets.SERVER_1_IP }}
 
-    # 5️ Create Ansible inventory
+    # 5️⃣ Create Ansible inventory
     - name: Create inventory
       run: |
         if [ -z "$SERVER_1_IP" ]; then
           echo "Error: SERVER_1_IP secret is not set!"
           exit 1
         fi
-        
-        cat > hosts << EOF
+
+        cat > hosts <<EOF
 [targets]
 web-server-1 ansible_host=$SERVER_1_IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/serverweb.pem
 EOF
@@ -52,7 +52,7 @@ EOF
       env:
         SERVER_1_IP: ${{ secrets.SERVER_1_IP }}
 
-    # 6️ Test connectivity
+    # 6️⃣ Test connectivity
     - name: Test connectivity
       env:
         ANSIBLE_HOST_KEY_CHECKING: False
@@ -60,17 +60,17 @@ EOF
         echo "Testing connectivity..."
         ansible all -i hosts -m ping
 
-    # 7️ Run Ansible playbook
+    # 7️⃣ Run Ansible playbook
     - name: Deploy
       env:
         ANSIBLE_HOST_KEY_CHECKING: False
       run: |
         ansible-playbook -i hosts deploy_with_ansible.yml
 
-    # 8️ Success message
+    # 8️⃣ Success message
     - name: Success
       run: |
-        echo " Deployment successful!"
+        echo "🎉 Deployment successful!"
         echo "Server URL: http://$SERVER_1_IP"
       env:
         SERVER_1_IP: ${{ secrets.SERVER_1_IP }}
