@@ -8,15 +8,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
+    # 1️ Checkout repository
     - uses: actions/checkout@v4
 
+    # 2️ Install Ansible
     - name: Install Ansible
       run: |
         sudo apt update
         sudo apt install -y ansible
 
+    # 3️ Setup SSH
     - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
@@ -24,32 +27,32 @@ jobs:
         chmod 600 ~/.ssh/serverweb.pem
         echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
-    - name: Debug secrets
+    # 4️ Debug secret (optional)
+    - name: Debug SERVER_1_IP
       run: |
         echo "SERVER_1_IP length: ${#SERVER_1_IP}"
-        echo "SSH_KEY length: ${#SSH_PRIVATE_KEY}"
       env:
         SERVER_1_IP: ${{ secrets.SERVER_1_IP }}
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
+    # 5️ Create Ansible inventory
     - name: Create inventory
       run: |
-        if [ -z "$SERVER_1_IP" ] || [ -z "$SERVER_2_IP" ]; then
-          echo "Error: SERVER_1_IP or SERVER_2_IP secrets are not set!"
+        if [ -z "$SERVER_1_IP" ]; then
+          echo "Error: SERVER_1_IP secret is not set!"
           exit 1
         fi
         
         cat > hosts << EOF
-        [targets]
-        web-server-1 ansible_host=$SERVER_1_IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/serverweb.pem
-        EOF
-        
+[targets]
+web-server-1 ansible_host=$SERVER_1_IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/serverweb.pem
+EOF
+
         echo "Generated inventory:"
         cat hosts
       env:
         SERVER_1_IP: ${{ secrets.SERVER_1_IP }}
-      
 
+    # 6️ Test connectivity
     - name: Test connectivity
       env:
         ANSIBLE_HOST_KEY_CHECKING: False
@@ -57,16 +60,18 @@ jobs:
         echo "Testing connectivity..."
         ansible all -i hosts -m ping
 
+    # 7️ Run Ansible playbook
     - name: Deploy
       env:
         ANSIBLE_HOST_KEY_CHECKING: False
       run: |
         ansible-playbook -i hosts deploy_with_ansible.yml
 
+    # 8️ Success message
     - name: Success
       run: |
-        echo "🎉 Deployment successful!"
-        echo "URLs: http://$SERVER_1_IP "
+        echo " Deployment successful!"
+        echo "Server URL: http://$SERVER_1_IP"
       env:
         SERVER_1_IP: ${{ secrets.SERVER_1_IP }}
-  
+
