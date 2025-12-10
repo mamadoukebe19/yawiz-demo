@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mamadou Kebe - DevOps & Cloud Engineer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-cloud"></i>
+                <span>Mamadou Kebe</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#about"><i class="fas fa-user"></i> About</a></li>
+                <li><a href="#services"><i class="fas fa-cogs"></i> Services</a></li>
+                <li><a href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-rocket"></i> DevOps & Cloud Engineering</h1>
+            <p class="hero-subtitle">Automating infrastructure, optimizing deployments, and scaling cloud solutions</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <i class="fab fa-aws"></i>
+                    <span>AWS Certified</span>
+                </div>
+                <div class="stat">
+                    <i class="fab fa-docker"></i>
+                    <span>Docker Expert</span>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-infinity"></i>
+                    <span>CI/CD Specialist</span>
+                </div>
+            </div>
+            <button class="cta-button" onclick="scrollToSection('about')">
+                <i class="fas fa-arrow-down"></i> Learn More
+            </button>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <h2><i class="fas fa-user-tie"></i> About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Passionate DevOps Engineer with expertise in cloud infrastructure, automation, and scalable deployment solutions. I specialize in building robust CI/CD pipelines and managing cloud-native applications.</p>
+                    <div class="skills">
+                        <div class="skill">
+                            <i class="fab fa-aws"></i>
+                            <span>AWS Cloud Services</span>
+                        </div>
+                        <div class="skill">
+                            <i class="fab fa-docker"></i>
+                            <span>Docker & Kubernetes</span>
+                        </div>
+                        <div class="skill">
+                            <i class="fas fa-code-branch"></i>
+                            <span>Terraform & IaC</span>
+                        </div>
+                        <div class="skill">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Monitoring & Observability</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <div class="container">
+            <h2><i class="fas fa-cogs"></i> Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Cloud Migration</h3>
+                    <p>Seamless migration of applications and infrastructure to AWS cloud with zero downtime.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-infinity"></i>
+                    <h3>CI/CD Pipeline</h3>
+                    <p>Automated deployment pipelines using Jenkins, GitLab CI, and AWS CodePipeline.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-server"></i>
+                    <h3>Infrastructure as Code</h3>
+                    <p>Scalable and maintainable infrastructure using Terraform and CloudFormation.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Security & Compliance</h3>
+                    <p>Implementation of security best practices and compliance frameworks.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Monitoring & Alerting</h3>
+                    <p>Comprehensive monitoring solutions with Grafana, Prometheus, and CloudWatch.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-tools"></i>
+                    <h3>DevOps Consulting</h3>
+                    <p>Strategic guidance on DevOps transformation and best practices implementation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="demo-section">
+        <div class="container">
+            <h2><i class="fas fa-play-circle"></i> Live Demo</h2>
+            <div class="demo-card">
+                <h3>Current Deployment Status</h3>
+                <p>This website is currently running on:</p>
+                <div class="tech-stack">
+                    <div class="tech-item">
+                        <i class="fab fa-docker"></i>
+                        <span>Docker Container</span>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fab fa-aws"></i>
+                        <span>AWS EC2</span>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-code"></i>
+                        <span>Terraform IaC</span>
+                    </div>
+                </div>
+                <button class="demo-button" onclick="showDeploymentStatus()">
+                    <i class="fas fa-rocket"></i> Check Deployment Status
+                </button>
+                <div id="status-message" class="status-message"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2><i class="fas fa-envelope"></i> Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>mamadou.kebe@example.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-linkedin"></i>
+                        <span>linkedin.com/in/mamadoukebe</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-github"></i>
+                        <span>github.com/mamadoukebe</span>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form onsubmit="handleSubmit(event)">
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                        <textarea placeholder="Your Message" rows="5" required></textarea>
+                        <button type="submit">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-cloud"></i>
+                    <span>Mamadou Kebe</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#services">Services</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Mamadou A. Kebe - DevOps & Cloud Engineer. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
