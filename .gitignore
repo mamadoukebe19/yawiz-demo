@@ -1,11 +1,23 @@
-# Terraform local files
-.terraform/
-*.tfstate
-*.tfstate.backup
-*.terraform.lock.hcl
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate*
+terraform/terraform.tfvars
 
-# MacOS
+# SSH Keys
+*.pem
+*.key
+
+# Ansible
+*.retry
+
+# OS
 .DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
 
 # Logs
 *.log
