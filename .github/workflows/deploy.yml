@@ -1,50 +1,44 @@
-name: Deploy Yawiz Application
+name: Simple Deploy
 
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    - name: Setup SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/serverweb.pem
-        chmod 600 ~/.ssh/serverweb.pem
-        ssh-keyscan -H ${{ secrets.SERVER_1_IP }} >> ~/.ssh/known_hosts
-      
     - name: Install Ansible
       run: |
         sudo apt update
         sudo apt install -y ansible
 
-    - name: Create dynamic inventory
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/serverweb.pem
+        chmod 600 ~/.ssh/serverweb.pem
+        echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
+    - name: Create inventory
       run: |
         cat > hosts << EOF
         [targets]
         web-server-1 ansible_host=${{ secrets.SERVER_1_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/serverweb.pem
-        web-
         
-        [targets:vars]
-        ansible_ssh_common_args='-o StrictHostKeyChecking=no'
         EOF
 
-    - name: Test connectivity
-      run: ansible all -i hosts -m ping
-
-    - name: Deploy application
-      run: ansible-playbook -i hosts deploy_with_ansible.yml
-
-    - name: Verify deployment
+    - name: Deploy
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: False
       run: |
-        echo "🎉 Deployment completed!"
-        echo "Application URLs:"
-        echo "• http://${{ secrets.SERVER_1_IP }}"
+        ansible-playbook -i hosts deploy_with_ansible.yml
+
+    - name: Success
+      run: |
+        echo "🎉 Deployment successful!"
+        echo "URLs: http://${{ secrets.SERVER_1_IP }} "
