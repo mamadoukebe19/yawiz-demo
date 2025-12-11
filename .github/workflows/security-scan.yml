@@ -13,41 +13,56 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1️⃣ Checkout the repository
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # ---------- Scan filesystem ----------
+    # 2️⃣ Run Trivy filesystem scan (inside container)
     - name: Run Trivy filesystem scan
-      run: |
-        trivy fs --format table --exit-code 1 --severity CRITICAL,HIGH .
-        trivy fs --format json --output fs-security-report.json .
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'table'
+        exit-code: '1'
+        severity: 'CRITICAL,HIGH'
 
-    # ---------- Build Docker image ----------
+    # 3️⃣ Build the Docker image for scanning
     - name: Build Docker image
       run: docker build -t yawiz-web:scan .
 
-    # ---------- Scan Docker image ----------
-    - name: Run Trivy Docker image scan
-      run: |
-        trivy image --format table --exit-code 1 --severity CRITICAL,HIGH yawiz-web:scan
-        trivy image --format json --output image-security-report.json yawiz-web:scan
+    # 4️⃣ Run Trivy Docker image scan
+    - name: Run Trivy image scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'yawiz-web:scan'
+        format: 'table'
+        exit-code: '1'
+        severity: 'CRITICAL,HIGH'
 
-    # ---------- Combine reports ----------
-    - name: Combine Trivy reports
-      run: |
-        mkdir -p ./report/
-        jq -s '.' fs-security-report.json image-security-report.json > ./report/security-report.json
+    # 5️⃣ Generate JSON security report (filesystem scan)
+    - name: Generate JSON security report
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'json'
+        output: 'security-report.json'
 
-    # ---------- Upload artifact ----------
-    - name: Upload combined security report
+    # 6️⃣ Ensure the local folder exists to store artifacts
+    - name: Ensure report folder exists
+      run: mkdir -p ./report
+
+    # 7️⃣ Upload security report as artifact
+    - name: Upload security report
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: security-report
-        path: ./report/security-report.json
+        path: security-report.json
 
-    # ---------- Download artifact (optional) ----------
-    - name: Download security report
+    # 8️⃣ Download the artifact to a folder
+    - name: Download Trivy report
       uses: actions/download-artifact@v4
       with:
         name: security-report
