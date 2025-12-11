@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Checkout the repository
+    # 1️ Checkout the repository
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2️⃣ Run Trivy filesystem scan (inside container)
+    # 2️ Run Trivy filesystem scan (inside container)
     - name: Run Trivy filesystem scan
       uses: aquasecurity/trivy-action@master
       with:
@@ -27,11 +27,11 @@ jobs:
         exit-code: '0'
         severity: 'CRITICAL,HIGH'
 
-    # 3️⃣ Build the Docker image for scanning
+    # 3️ Build the Docker image for scanning
     - name: Build Docker image
       run: docker build -t yawiz-web:scan .
 
-    # 4️⃣ Run Trivy Docker image scan
+    # 4️ Run Trivy Docker image scan
     - name: Run Trivy image scan
       uses: aquasecurity/trivy-action@master
       with:
@@ -40,7 +40,7 @@ jobs:
         exit-code: '1'
         severity: 'CRITICAL,HIGH'
 
-    # 5️⃣ Generate JSON security report (filesystem scan)
+    # 5️ Generate JSON security report (filesystem scan)
     - name: Generate JSON security report
       uses: aquasecurity/trivy-action@master
       with:
@@ -49,11 +49,11 @@ jobs:
         format: 'json'
         output: 'security-report.json'
 
-    # 6️⃣ Ensure the local folder exists to store artifacts
+    # 6️ Ensure the local folder exists to store artifacts
     - name: Ensure report folder exists
       run: mkdir -p ./report
 
-    # 7️⃣ Upload security report as artifact
+    # 7️ Upload security report as artifact
     - name: Upload security report
       uses: actions/upload-artifact@v4
       if: always()
@@ -61,7 +61,7 @@ jobs:
         name: security-report
         path: security-report.json
 
-    # 8️⃣ Download the artifact to a folder
+    # 8️ Download the artifact to a folder
     - name: Download Trivy report
       uses: actions/download-artifact@v4
       with:
