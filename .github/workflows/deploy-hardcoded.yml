@@ -1,4 +1,4 @@
-name: Simple Deploy
+name: Deploy to Server
 
 on:
   push:
@@ -6,8 +6,34 @@ on:
   workflow_dispatch:
 
 jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Run Trivy repository scan
+      uses: aquasecurity/trivy-action@master
+      continue-on-error: true
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'table'
+        severity: 'HIGH,CRITICAL'
+
+    - name: Build Docker image for scanning
+      run: docker build -t yawiz-web:scan .
+
+    - name: Run Trivy Docker image scan
+      uses: aquasecurity/trivy-action@master
+      continue-on-error: true
+      with:
+        image-ref: 'yawiz-web:scan'
+        format: 'table'
+        severity: 'HIGH,CRITICAL'
+
   deploy:
     runs-on: ubuntu-latest
+    needs: security-scan
     
     steps:
     - uses: actions/checkout@v4
@@ -24,36 +50,20 @@ jobs:
         chmod 600 ~/.ssh/serverweb.pem
         echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
-    - name: Debug secrets
-      run: |
-        echo "SERVER_1_IP length: ${#SERVER_1_IP}"
-        echo "SSH_KEY length: ${#SSH_PRIVATE_KEY}"
-      env:
-        SERVER_1_IP: ${{ secrets.SERVER_1_IP }}
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-
     - name: Create inventory
       run: |
-        if [ -z "$SERVER_1_IP" ]; then
-          echo "Error: SERVER_1_IP secret is not set!"
-          exit 1
-        fi
-        
         cat > hosts << EOF
         [targets]
-        web-server-1 ansible_host=$SERVER_1_IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/serverweb.pem
+        web-server-1 ansible_host=54.88.151.51 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/serverweb.pem
         EOF
         
         echo "Generated inventory:"
         cat hosts
-      env:
-        SERVER_1_IP: ${{ secrets.SERVER_1_IP }}
 
     - name: Test connectivity
       env:
         ANSIBLE_HOST_KEY_CHECKING: False
       run: |
-        echo "Testing connectivity..."
         ansible all -i hosts -m ping
 
     - name: Deploy
@@ -65,6 +75,4 @@ jobs:
     - name: Success
       run: |
         echo "🎉 Deployment successful!"
-        echo "Application URL: http://$SERVER_1_IP"
-      env:
-        SERVER_1_IP: ${{ secrets.SERVER_1_IP }}
+        echo "Application URL: http://54.88.151.51"
