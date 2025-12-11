@@ -11,47 +11,43 @@ on:
 jobs:
   trivy-scan:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    # ---------- Scan filesystem ----------
     - name: Run Trivy filesystem scan
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'table'
-        exit-code: '1'
-        severity: 'CRITICAL,HIGH'
+      run: |
+        trivy fs --format table --exit-code 1 --severity CRITICAL,HIGH .
+        trivy fs --format json --output fs-security-report.json .
 
+    # ---------- Build Docker image ----------
     - name: Build Docker image
       run: docker build -t yawiz-web:scan .
 
-    - name: Run Trivy image scan
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: 'yawiz-web:scan'
-        format: 'table'
-        exit-code: '1'
-        severity: 'CRITICAL,HIGH'
+    # ---------- Scan Docker image ----------
+    - name: Run Trivy Docker image scan
+      run: |
+        trivy image --format table --exit-code 1 --severity CRITICAL,HIGH yawiz-web:scan
+        trivy image --format json --output image-security-report.json yawiz-web:scan
 
-    - name: Generate security report
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'json'
-        output: 'security-report.json'
+    # ---------- Combine reports ----------
+    - name: Combine Trivy reports
+      run: |
+        mkdir -p ./report/
+        jq -s '.' fs-security-report.json image-security-report.json > ./report/security-report.json
 
-    - name: Upload security report
+    # ---------- Upload artifact ----------
+    - name: Upload combined security report
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: security-report
-        path: security-report.json
+        path: ./report/security-report.json
 
-    - name: Download Trivy report
+    # ---------- Download artifact (optional) ----------
+    - name: Download security report
       uses: actions/download-artifact@v4
       with:
         name: security-report
