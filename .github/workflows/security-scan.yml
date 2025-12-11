@@ -50,3 +50,9 @@ jobs:
       with:
         name: security-report
         path: security-report.json
+
+    - name: Download Trivy report
+      uses: actions/download-artifact@v4
+      with:
+        name: security-report
+        path: ./report/
