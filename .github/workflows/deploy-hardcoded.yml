@@ -75,4 +75,4 @@ jobs:
     - name: Success
       run: |
         echo "🎉 Deployment successful!"
-        echo "Application URL: http://34.228.61.206"
+        echo "Application URL: http://98.94.88.197"
